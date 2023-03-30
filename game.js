@@ -1,13 +1,13 @@
+// Define possible moves and initial weights for each move
+const moves = ['rock', 'paper', 'scissors'];
+let weights = [1, 1, 1];
+
+// Initialize game state variables
 let games = 1;
 let win = 0;
 let lose = 0;
-let counts = [
-    {'move': 'rock', 'count': 0},
-    {'move': 'paper', 'count': 0},
-    {'move': 'scissors', 'count': 0}
-];
 
-//build page
+// Build page HTML using JavaScript
 (function buildPage() {
     document.getElementById('output').innerHTML = `
     <h1>Rock paper Scissors</h1>
@@ -44,14 +44,15 @@ let counts = [
         <div class="player hover" id="scissors"><img src="images/scissors.png"></div>
         <h3 class="name">You</h3>
     </div>`
-})()
+})();
 
-//Initial event listeners
+// Set up initial event listeners for buttons
 document.getElementById('reset').addEventListener("click", resetBoard)
 document.getElementById('rock').addEventListener("click", onRockClick)
 document.getElementById('paper').addEventListener("click", onPaperClick)
 document.getElementById('scissors').addEventListener("click", onScissorsClick)
 
+// Event handlers for player moves
 function onRockClick() {
     play("rock");
 }
@@ -62,7 +63,7 @@ function onScissorsClick() {
     play("scissors");
 }
 
-//reset score board
+// Function to reset the score board
 function resetBoard() {
     win = 0;
     lose = 0;
@@ -70,58 +71,51 @@ function resetBoard() {
     
     document.getElementById('winsCount').innerText = win;
     document.getElementById('loseCount').innerText = lose;
-    document.getElementById('rateCount').innerText = rate;
+    document.getElementById('rateCount').innerText = 0;
 }
 
+// Function to play a move
 function play(playerSelection) {
     document.getElementById(playerSelection).style.opacity = 1;
 
-    //find player's most used move
-    let highest = counts.reduce(
-        (prev, current) => {
-          return prev.count > current.count ? prev : current
-        }
-      );
+    // Get weights based off of past player moves
+    const randomNum = Math.random();
+    let totalWeight = weights.reduce((acc, curr) => acc + curr);
 
+    let selectedMove;
+    let weightSum = 0;
+    for (let i = 0; i < moves.length; i++) {
+      weightSum += weights[i];
+      if (randomNum < weightSum / totalWeight) {
+        selectedMove = convert(moves[i]);
+        break;
+      } else {
+        selectedMove = convert(moves[Math.floor(randomNum*3)])
+      }
+    }
 
-    let computerSelection;
-    //Random move if probability is the same
-    if(counts[0].count == counts[1].count && counts[0].count == counts[2].count) {
-        const random = Math.floor(Math.random() * Object.keys(counts).length);
-
-        computerSelection = counts[random].move;
-
-        //Check if two moves have equal probability
-    } else if(counts.find(move => (move.count == highest.count) && move.move != highest.move)) {
-        computerSelection = convert(highest);
-
-        //Find best move according to probability
-    } else {
-        computerSelection = convert(highest)
-    };
-
-    //Converts predicted player move to computer move
-    if(computerSelection == 'rock') {
+    // Highlights computer move
+    if(selectedMove == 'rock') {
         document.getElementById('rockEnemy').style.opacity = 1;
-    } else if(computerSelection == 'paper') {
+    } else if(selectedMove == 'paper') {
         document.getElementById('paperEnemy').style.opacity = 1;
-    } else if(computerSelection == 'scissors') {
+    } else if(selectedMove == 'scissors') {
         document.getElementById('scissorsEnemy').style.opacity = 1;
     }
 
-    //Counts what the player has done so far
+    // Counts what the player has done so far
     if(playerSelection == 'rock') {
-        counts[0].count++;
+        weights[0]++;
     } else if(playerSelection == 'paper') {
-        counts[1].count++;
+        weights[1]++;
     } else if(playerSelection == 'scissors') {
-        counts[2].count++;
+        weights[2]++;
     };
 
-    //Checks who won
-    scoring(playerSelection, computerSelection);
+    // Checks who won
+    scoring(playerSelection, selectedMove);
 
-    //Prevents any more moves until board is reset
+    // Prevents any more moves until board is reset
     document.getElementById("rock").removeEventListener("click", onRockClick);
     document.getElementById("paper").removeEventListener("click", onPaperClick);
     document.getElementById("scissors").removeEventListener("click", onScissorsClick);
@@ -131,14 +125,14 @@ function play(playerSelection) {
     });
 }
 
-
-function scoring(playerSelection, computerSelection) {
-    if (playerSelection == computerSelection) {
+// Adjust score board
+function scoring(playerSelection, selectedMove) {
+    if (playerSelection == selectedMove) {
         document.getElementById('result').innerText = "Tie!";
       } else if (
-        (playerSelection == "rock" && computerSelection == "scissors") ||
-        (playerSelection == "paper" && computerSelection == "rock") ||
-        (playerSelection == "scissors" && computerSelection == "paper")
+        (playerSelection == "rock" && selectedMove == "scissors") ||
+        (playerSelection == "paper" && selectedMove == "rock") ||
+        (playerSelection == "scissors" && selectedMove == "paper")
       ) {
         document.getElementById('result').innerText = "You Won!";
         win++;
@@ -158,6 +152,7 @@ function scoring(playerSelection, computerSelection) {
 
 document.getElementById('gameFinished').addEventListener("click", reset)
 
+// Reset button
 function reset() {
     document.getElementById('rockEnemy').style.opacity = 0.1;
     document.getElementById('paperEnemy').style.opacity = 0.1;
@@ -179,13 +174,14 @@ function reset() {
     });
 }
 
-function convert(highest) {
+// Converts move to the one that will win
+function convert(selectedMove) {
     let move;
-    if(highest.move == 'rock') {
+    if(selectedMove == 'rock') {
         move = 'paper';
-    } else if(highest.move == 'paper') {
+    } else if(selectedMove == 'paper') {
         move = 'scissors';
-    } else if(highest.move == 'scissors') {
+    } else if(selectedMove == 'scissors') {
         move = 'rock';
     }
     return move;

@@ -1,82 +1,96 @@
 html {
-    padding: 0 10px 0 10px;
-    font-family: 'Courier New', Courier, monospace;
-}
-#scoreDisplay {
-    background-color: lightgray;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    text-align: center;
-    border-radius: 10px;
-}
-#scoreDisplay div span {
-    font-size: 28px;
-    font-weight: bold;
-}
-h2, h1, #result {
-    text-align: center;
-    font-size: 28px;
-}
-#reset {
-    grid-column: 1/4;
-    border: 2px solid black;
-    border-radius: 10px;
-    width: 300px;
-    justify-self: center;
-    margin: 5px;
-}
-#reset:hover {
-    background-color: gray;
+  padding: 0 10px;
+  font-family: 'Courier New', Courier, monospace;
 }
 
+#scoreDisplay {
+  background-color: lightgray;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  border-radius: 10px;
+}
+
+#scoreDisplay > div > span {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+h1, h2, #result {
+  text-align: center;
+  font-size: 28px;
+}
+
+#reset {
+  grid-column: 1/4;
+  border: 2px solid black;
+  border-radius: 10px;
+  width: 300px;
+  justify-self: center;
+  margin: 5px;
+}
+
+#reset:hover {
+  background-color: gray;
+}
 
 #board {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    margin: 0 20px 0 20px;
-    justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 20px;
+  justify-content: center;
 }
-#board div {
-    width: 70%;
-    border: 2px solid black;
-    padding: 10px;
-    justify-self: center;
-    opacity: 0.1;
+
+#board > div {
+  width: 70%;
+  border: 2px solid black;
+  padding: 10px;
+  justify-self: center;
+  opacity: 0.1;
 }
+
 .computer {
-    margin-bottom: 40px;
+  margin-bottom: 40px;
 }
+
 .player {
-    margin-top: 40px;
+  margin-top: 40px;
 }
+
 #fence {
-    grid-column: 1/4;
-    width: 100%;
-    border: 3px solid black;
+  grid-column: 1/4;
+  width: 100%;
+  border: 3px solid black;
 }
+
 img {
-    width: 100%;
-    -webkit-user-drag: none;
+  width: 100%;
+  -webkit-user-drag: none;
 }
-#rock:hover, #paper:hover, #scissors:hover {
-    opacity: 0.5 !important;
-    cursor: pointer;
+
+#rock:hover,
+#paper:hover,
+#scissors:hover {
+  opacity: 0.5 !important;
+  cursor: pointer;
 }
+
 .disabled {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .name {
-    grid-column: 1/4;
-    text-align: center;
-    font-size: 30px;
+  grid-column: 1/4;
+  text-align: center;
+  font-size: 30px;
 }
-#gameFinished{
-    font-weight: bold;
-    margin-top: 30px;
-    visibility: hidden;
-    text-align: center;
-    border: 1px solid black;
-    width: 250px;
-    margin: 35px auto 0 auto;
+
+#gameFinished {
+  font-weight: bold;
+  margin-top: 30px;
+  visibility: hidden;
+  text-align: center;
+  border: 1px solid black;
+  width: 250px;
+  margin: 35px auto 0 auto;
 }
