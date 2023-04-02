@@ -3,9 +3,13 @@ const moves = ['rock', 'paper', 'scissors'];
 let weights = [1, 1, 1];
 
 // Initialize game state variables
-let games = 1;
+let games = 0;
 let win = 0;
 let lose = 0;
+let rate;
+let lastPlayerSelection;
+let lastComputerSelection;
+let lastWinner;
 
 // Build page HTML using JavaScript
 (function buildPage() {
@@ -24,6 +28,10 @@ let lose = 0;
             <h2>Win Rate:</h2>
             <span id="rateCount"></span><span>%</span>
         </div>
+        <div id="rounds">
+            <h2>Round:</h2>
+            <span id="round"></span>
+    </div>
         <div id="reset">
             <h2>Reset Scores</h2>
             <span id="resetBtn"></span>
@@ -34,23 +42,23 @@ let lose = 0;
         <div id="playAgain">Click here to play again</div>
     </div>
     <div id="board">
-        <h3 class="name">Computer</h3>
-        <div class="computer" id="rockEnemy"><img src="images/rock.png"></div>
-        <div class="computer" id="paperEnemy"><img src="images/paper.png"></div>
-        <div class="computer" id="scissorsEnemy"><img src="images/scissors.png"></div>
-        <span id="fence"></span>
+    <h3 class="name">You</h3>   
         <div class="player hover" id="rock"><img src="images/rock.png"></div>
         <div class="player hover" id="paper"><img src="images/paper.png"></div>
         <div class="player hover" id="scissors"><img src="images/scissors.png"></div>
-        <h3 class="name">You</h3>
-    </div>`
+        <span id="fence"></span>
+        <div class="computer" id="rockEnemy"><img src="images/rock.png"></div>
+        <div class="computer" id="paperEnemy"><img src="images/paper.png"></div>
+        <div class="computer" id="scissorsEnemy"><img src="images/scissors.png"></div>
+        <h3 class="name">Computer</h3>
+    </div>`;
 })();
 
 // Set up initial event listeners for buttons
-document.getElementById('reset').addEventListener("click", resetBoard)
-document.getElementById('rock').addEventListener("click", onRockClick)
-document.getElementById('paper').addEventListener("click", onPaperClick)
-document.getElementById('scissors').addEventListener("click", onScissorsClick)
+document.getElementById('reset').addEventListener("click", resetScores);
+document.getElementById('rock').addEventListener("click", onRockClick);
+document.getElementById('paper').addEventListener("click", onPaperClick);
+document.getElementById('scissors').addEventListener("click", onScissorsClick);
 
 // Event handlers for player moves
 function onRockClick() {
@@ -64,14 +72,15 @@ function onScissorsClick() {
 }
 
 // Function to reset the score board
-function resetBoard() {
+function resetScores() {
     win = 0;
     lose = 0;
-    games = 1;
+    games = 0;
     
     document.getElementById('winsCount').innerText = win;
     document.getElementById('loseCount').innerText = lose;
     document.getElementById('rateCount').innerText = 0;
+    document.getElementById('round').innerText = games;
 }
 
 // Function to play a move
@@ -88,9 +97,10 @@ function play(playerSelection) {
       weightSum += weights[i];
       if (randomNum < weightSum / totalWeight) {
         selectedMove = convert(moves[i]);
+
         break;
       } else {
-        selectedMove = convert(moves[Math.floor(randomNum*3)])
+        selectedMove = convert(moves[Math.floor(randomNum*3)]);
       }
     }
 
@@ -110,7 +120,7 @@ function play(playerSelection) {
         weights[1]++;
     } else if(playerSelection == 'scissors') {
         weights[2]++;
-    };
+    }
 
     // Checks who won
     scoring(playerSelection, selectedMove);
@@ -129,6 +139,7 @@ function play(playerSelection) {
 function scoring(playerSelection, selectedMove) {
     if (playerSelection == selectedMove) {
         document.getElementById('result').innerText = "Tie!";
+        lastWinner = "none";
       } else if (
         (playerSelection == "rock" && selectedMove == "scissors") ||
         (playerSelection == "paper" && selectedMove == "rock") ||
@@ -136,24 +147,33 @@ function scoring(playerSelection, selectedMove) {
       ) {
         document.getElementById('result').innerText = "You Won!";
         win++;
+        lastPlayerSelection = playerSelection;
+        lastComputerSelection = selectedMove;
+        lastWinner = "player";
       } else {
         document.getElementById('result').innerText = "Computer Won!";
         lose++;
+        lastWinner = "computer";
       }
 
-      let rate = Math.round((win/games)*100);
+      if(win == 0 && lose == 0) {
+        rate = 0;
+      } else {
+        rate = Math.round((win/(win+lose))*100);
+      }
 
       document.getElementById('winsCount').innerText = win;
       document.getElementById('loseCount').innerText = lose;
       document.getElementById('rateCount').innerText = rate;
+      document.getElementById('round').innerText = games;
 
       document.getElementById('gameFinished').style.visibility = "visible";
 }
 
-document.getElementById('gameFinished').addEventListener("click", reset)
+document.getElementById('gameFinished').addEventListener("click", resetBoard)
 
 // Reset button
-function reset() {
+function resetBoard() {
     document.getElementById('rockEnemy').style.opacity = 0.1;
     document.getElementById('paperEnemy').style.opacity = 0.1;
     document.getElementById('scissorsEnemy').style.opacity = 0.1;
@@ -172,6 +192,10 @@ function reset() {
     document.querySelectorAll(".hover").forEach(element => {
         element.classList.remove('disabled');
     });
+
+    document.getElementById('winsCount').innerText = win;
+    document.getElementById('loseCount').innerText = lose;
+    document.getElementById('rateCount').innerText = rate;
 }
 
 // Converts move to the one that will win
