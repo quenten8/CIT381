@@ -7,9 +7,12 @@ let games = 0;
 let win = 0;
 let lose = 0;
 let rate;
+
 let lastPlayerSelection;
 let lastComputerSelection;
 let lastWinner;
+let selectedMove;
+let mode = 'Strategy';
 
 // Build page HTML using JavaScript
 (function buildPage() {
@@ -36,6 +39,13 @@ let lastWinner;
             <h2>Reset Scores</h2>
             <span id="resetBtn"></span>
         </div>
+    <div id="switchMode">
+        <h2>Switch Mode</h2>
+    </div>
+    <div id="modeDisplay">
+        <h2>Mode:</h2>
+        <h3 id="mode">Strategy</h3>
+    </div>
     </div>
     <div id=gameFinished>
         <div id="result">Results</div>
@@ -56,6 +66,7 @@ let lastWinner;
 
 // Set up initial event listeners for buttons
 document.getElementById('reset').addEventListener("click", resetScores);
+document.getElementById('switchMode').addEventListener("click", switchMode);
 document.getElementById('rock').addEventListener("click", onRockClick);
 document.getElementById('paper').addEventListener("click", onPaperClick);
 document.getElementById('scissors').addEventListener("click", onScissorsClick);
@@ -81,28 +92,58 @@ function resetScores() {
     document.getElementById('loseCount').innerText = lose;
     document.getElementById('rateCount').innerText = 0;
     document.getElementById('round').innerText = games;
+    document.getElementById('mode').innerText = mode;
+}
+
+//Change how you want the computer to play
+function switchMode() {
+    if(mode == 'Strategy') {
+        mode = 'Learning'
+        document.getElementById('mode').innerText = mode;
+    } else {
+        mode = 'Strategy'
+        document.getElementById('mode').innerText = mode;
+    }
 }
 
 // Function to play a move
 function play(playerSelection) {
     document.getElementById(playerSelection).style.opacity = 1;
 
-    // Get weights based off of past player moves
-    const randomNum = Math.random();
-    let totalWeight = weights.reduce((acc, curr) => acc + curr);
+    //check which mode is on and play accordingly
+    if(mode=='Strategy') {
+        //**If computer lost, it will play the thing that didn't come up the round before
+        if(lastWinner == 'player') {
+            if(lastPlayerSelection=='rock'){
+                selectedMove = 'paper'
+            } else if(lastPlayerSelection=='paper'){
+                selectedMove = 'scissors'
+            } else {
+                selectedMove = 'rock'
+            }
+        //**If computer wins, it will play what player just lost with
+        } else if(lastWinner == 'computer') {
+            selectedMove = lastPlayerSelection;
+        //**Play random move if there was a tie
+        } else {
+            selectedMove = convert(moves[Math.floor(Math.random()*3)]);
+        }
+    //Computer will guess next move with best chance of winning
+    } else {
+        // Get weights based off of past player moves
+        const randomNum = Math.random();
+        let totalWeight = weights.reduce((acc, curr) => acc + curr);
 
-    let selectedMove;
-    let weightSum = 0;
-    for (let i = 0; i < moves.length; i++) {
-      weightSum += weights[i];
-      if (randomNum < weightSum / totalWeight) {
-        selectedMove = convert(moves[i]);
-
-        break;
-      } else {
-        selectedMove = convert(moves[Math.floor(randomNum*3)]);
-      }
-    }
+        let weightSum = 0;
+        for (let i = 0; i < moves.length; i++) {
+        weightSum += weights[i];
+        if (randomNum < weightSum / totalWeight) {
+            selectedMove = convert(moves[i]);
+            break;
+        } else {
+            selectedMove = convert(moves[Math.floor(randomNum*3)]);
+        }
+    }}
 
     // Highlights computer move
     if(selectedMove == 'rock') {
@@ -198,7 +239,7 @@ function resetBoard() {
     document.getElementById('rateCount').innerText = rate;
 }
 
-// Converts move to the one that will win
+// Converts what computer thinks player will play to the winning move
 function convert(selectedMove) {
     let move;
     if(selectedMove == 'rock') {

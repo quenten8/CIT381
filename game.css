@@ -26,7 +26,12 @@ h1, h2, #result {
 }
 
 #reset {
-  grid-column: 1/5;
+  grid-column: 2/3;
+}
+#switchMode {
+  grid-column: 3/4;
+}
+#reset, #switchMode {
   border: 2px solid #000;
   border-radius: 5px;
   width: 200px;
@@ -34,12 +39,16 @@ h1, h2, #result {
   justify-self: center;
   margin: 8px;
 }
-#reset h2 {
-    margin-top: 10px;
+#reset h2, #switchMode h2 {
+    margin: 10px;
     font-size: 20px;
 }
+#mode, #modeDisplay h2 {
+  font-size: 20px;
+  margin: 5px;
+}
 
-#reset:hover {
+#reset:hover, #switchMode:hover {
   background-color: #848484;
   transition: all 0.2s;
 }
