@@ -8,7 +8,7 @@ let win = 0;
 let lose = 0;
 let rate;
 
-let lastPlayerSelection;
+let lastPlayerSelection = 'rock';
 let lastComputerSelection;
 let lastWinner;
 let selectedMove;
